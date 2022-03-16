@@ -9,13 +9,15 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 A new flutter plugin project.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://somo.me'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'SOMO' => 'yy@somo.me' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.platform = :ios, '9.0'
+
+  s.dependency 'TikTokOpenSDK', '~> 5.0.0'
+  s.platform = :ios, '9.3'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

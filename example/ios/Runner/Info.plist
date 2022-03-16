@@ -43,5 +43,26 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+	<!-- TikTok SDK Config Begin -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+			<string>tiktokopensdk</string>
+			<string>tiktoksharesdk</string>
+			<string>snssdk1180</string>
+			<string>snssdk1233</string>
+	</array>
+	<key>TikTokAppID</key>
+	<string>awoubuqrr5wlagef</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>awoubuqrr5wlagef</string>
+			</array>
+		</dict>
+	</array>
+	<!-- TikTok SDK Config End -->
 </dict>
 </plist>
