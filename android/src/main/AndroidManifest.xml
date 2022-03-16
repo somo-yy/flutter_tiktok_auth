@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.somo.flutter_tiktok_auth">
+    <application>
+        <activity
+            android:name=".tiktokapi.TikTokEntryActivity"
+            android:exported="true" />
+    </application>
+    <queries>
+        <package android:name="com.zhiliaoapp.musically" />
+        <package android:name="com.ss.android.ugc.trill" />
+    </queries>
+</manifest>
