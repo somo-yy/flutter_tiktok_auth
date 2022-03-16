@@ -2,7 +2,6 @@ import Flutter
 import UIKit
 import TikTokOpenSDK
 
-
 public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
       
@@ -19,7 +18,6 @@ public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
     if let applicationWindow = UIApplication.shared.delegate?.window ?? nil {
         return applicationWindow
     }
-    
     
     if #available(iOS 13.0, *) {
         if let scene = UIApplication.shared.connectedScenes.first(where: { $0.session.role == .windowApplication }),
@@ -46,15 +44,15 @@ public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
       }
   }
     
-  public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable: Any]) -> Bool {
+    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable: Any]) -> Bool {
         var options = [UIApplication.LaunchOptionsKey: Any]()
-                for (k, value) in launchOptions {
-                    let key = k as! UIApplication.LaunchOptionsKey
-                    options[key] = value
-                }
-           TikTokOpenSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: options)
-           return true
+        for (k, value) in launchOptions {
+            let key = k as! UIApplication.LaunchOptionsKey
+            options[key] = value
         }
+        TikTokOpenSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: options)
+        return true
+    }
     
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
 

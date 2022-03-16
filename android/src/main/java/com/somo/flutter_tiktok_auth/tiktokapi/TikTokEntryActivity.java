@@ -20,15 +20,18 @@ public class TikTokEntryActivity extends Activity implements IApiEventHandler {
     public static MethodChannel.Result result;
 
     TikTokOpenApi ttOpenApi;
+    
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ttOpenApi = TikTokOpenApiFactory.create(this);
         ttOpenApi.handleIntent(getIntent(),this); // receive and parse callback
     }
+
     @Override
     public void onReq(BaseReq req) {
     }
+
     @Override
     public void onResp(BaseResp resp) {
         if (resp instanceof Authorization.Response)  {
@@ -46,6 +49,7 @@ public class TikTokEntryActivity extends Activity implements IApiEventHandler {
         }
         this.finish();
     }
+
     @Override
     public void onErrorIntent(@Nullable Intent intent) {
         TikTokEntryActivity.result.error("-1", "Error", null);
