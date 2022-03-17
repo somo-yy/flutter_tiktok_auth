@@ -17,12 +17,8 @@ class FlutterTiktokAuth {
 
   Future<void> _init() async {
     if (_hasInit) return;
-    try {
-      await _channel.invokeMethod('init', {'clientKey': clientKey});
-      _hasInit = true;
-    } catch (e) {
-      print('$e');
-    }
+    await _channel.invokeMethod('init', {'clientKey': clientKey});
+    _hasInit = true;
   }
 
   Future<String?> authorize({required String scope, String state = ""}) async {

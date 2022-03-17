@@ -52,6 +52,7 @@ public class TikTokEntryActivity extends Activity implements IApiEventHandler {
 
     @Override
     public void onErrorIntent(@Nullable Intent intent) {
+        Log.d("SOMO onErrorIntent", "ERROR");
         TikTokEntryActivity.result.error("-1", "Error", null);
         this.finish();
     }

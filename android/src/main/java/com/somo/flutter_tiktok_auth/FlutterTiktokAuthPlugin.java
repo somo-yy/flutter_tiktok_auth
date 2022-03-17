@@ -84,6 +84,7 @@ public class FlutterTiktokAuthPlugin implements FlutterPlugin, MethodCallHandler
   private  void init(@NonNull String clientKey) {
     TikTokOpenConfig tiktokOpenConfig = new TikTokOpenConfig(clientKey);
     TikTokOpenApiFactory.init(tiktokOpenConfig);
+    Log.d("SOMO init", "" + clientKey);
     result.success(0);
   }
 

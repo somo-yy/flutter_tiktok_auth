@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_tiktok_auth/flutter_tiktok_auth.dart';
 
 void main() {
@@ -30,9 +30,9 @@ class _MyAppState extends State<MyApp> {
       authCode = await _flutterTiktokAuth.authorize(
               scope: "user.info.basic,video.list") ??
           '';
-      _errorMsg = null;
+      errorMsg = null;
     } on PlatformException catch (error) {
-      _errorMsg = error.message;
+      errorMsg = '${error.message}(${error.code})';
     }
 
     if (!mounted) return;
