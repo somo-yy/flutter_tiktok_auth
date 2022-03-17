@@ -1,5 +1,7 @@
 package com.somo.flutter_tiktok_auth;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -15,23 +17,30 @@ import io.flutter.plugin.common.MethodChannel.Result;
 public class FlutterTiktokAuthPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
 
   private static final String channelName = "flutter_tiktok_auth";
+  private static final String clientKeyResName = "tiktok_client_key";
   private MethodChannel channel;
   private ActivityPluginBinding activityPluginBinding;
   private TikTokAuth ttAuth;
+  private Context context;
+
+  public TikTokAuth getTTAuth() {
+    if (ttAuth == null) {
+      String clientKey = getResourceFromContext(context, clientKeyResName);
+      ttAuth = new TikTokAuth(this.activityPluginBinding.getActivity(), clientKey);
+    }
+    return ttAuth;
+  }
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), channelName);
     channel.setMethodCallHandler(this);
+    context = flutterPluginBinding.getApplicationContext();
   }
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-
     switch (call.method) {
-      case "init":
-        init(result, call.argument("clientKey"));
-        break;
       case "authorize":
         authorize(result, call.argument("scope"), call.argument("state"));
         break;
@@ -40,13 +49,8 @@ public class FlutterTiktokAuthPlugin implements FlutterPlugin, MethodCallHandler
     }
   }
 
-  private void init(MethodChannel.Result result, @NonNull String clientKey) {
-    ttAuth = new TikTokAuth(this.activityPluginBinding.getActivity(), clientKey);
-    result.success(0);
-  }
-
   private void authorize(MethodChannel.Result result, String scope, String state) {
-    ttAuth.authorize(result, scope, state);
+    getTTAuth().authorize(result, scope, state);
   }
 
   private void attachToActivity(ActivityPluginBinding activityPluginBinding) {
@@ -80,5 +84,13 @@ public class FlutterTiktokAuthPlugin implements FlutterPlugin, MethodCallHandler
   @Override
   public void onDetachedFromActivity() {
     disposeActivity();
+  }
+
+  private static String getResourceFromContext(@NonNull Context context, String resName) {
+    final int stringRes = context.getResources().getIdentifier(resName, "string", context.getPackageName());
+    if (stringRes == 0) {
+      throw new IllegalArgumentException(String.format("The 'R.string.%s' value it's not defined in your project's resources file.", resName));
+    }
+    return context.getString(stringRes);
   }
 }

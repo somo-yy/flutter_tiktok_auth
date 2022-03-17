@@ -31,9 +31,6 @@ public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
       let args = call.arguments as? [String: Any]
       
       switch call.method {
-      case "init":
-          self.initSDK(result: result)
-          break
       case "authorize":
           self.authorize(result: result, scope: args?["scope"] as! String, state: args?["state"] as! String)
           break
@@ -43,10 +40,6 @@ public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
       }
     }
     
-    private func initSDK(result: @escaping FlutterResult) {
-        result(0)
-    }
-
     private func authorize(result: @escaping FlutterResult, scope: String, state: String) {
         let request = TikTokOpenSDKAuthRequest()
         request.permissions = NSOrderedSet(array:scope.components(separatedBy: ","))

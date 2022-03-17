@@ -18,8 +18,7 @@ class _MyAppState extends State<MyApp> {
   String? _authCode;
   String? _errorMsg;
 
-  final FlutterTiktokAuth _flutterTiktokAuth =
-      FlutterTiktokAuth(clientKey: "awoubuqrr5wlagef");
+  final FlutterTiktokAuth _flutterTiktokAuth = FlutterTiktokAuth();
 
   Future<void> authorize() async {
     String? authCode;

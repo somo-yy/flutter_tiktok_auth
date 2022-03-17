@@ -7,20 +7,8 @@ export "models/authorize_result.dart";
 class FlutterTiktokAuth {
   static const MethodChannel _channel = MethodChannel('flutter_tiktok_auth');
 
-  final String clientKey;
-  bool _hasInit = false;
-
-  FlutterTiktokAuth({required this.clientKey});
-
-  Future<void> _init() async {
-    if (_hasInit) return;
-    await _channel.invokeMethod('init', {'clientKey': clientKey});
-    _hasInit = true;
-  }
-
   Future<AuthorizeResult> authorize(
       {required String scope, String state = ""}) async {
-    await _init();
     try {
       final result = await _channel
           .invokeMethod('authorize', {"scope": scope, "state": state});
