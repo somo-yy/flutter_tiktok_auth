@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_tiktok_auth/flutter_tiktok_auth.dart';
 
 void main() {
@@ -25,14 +24,17 @@ class _MyAppState extends State<MyApp> {
   Future<void> authorize() async {
     String? authCode;
     String? errorMsg;
-
-    try {
-      authCode = await _flutterTiktokAuth.authorize(
-              scope: "user.info.basic,video.list") ??
-          '';
+    final result =
+        await _flutterTiktokAuth.authorize(scope: "user.info.basic,video.list");
+    if (result is AuthorizeSucceeded) {
+      authCode = result.authCode;
       errorMsg = null;
-    } on PlatformException catch (error) {
-      errorMsg = '${error.message}(${error.code})';
+    } else if (result is AuthorizeFailed) {
+      errorMsg = null;
+      errorMsg = '${result.message}(${result.code})';
+    } else if (result is AuthorizeCanceled) {
+      errorMsg = null;
+      errorMsg = 'Canceled';
     }
 
     if (!mounted) return;

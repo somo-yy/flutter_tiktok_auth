@@ -1,14 +1,6 @@
 package com.somo.flutter_tiktok_auth;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
-
-import com.bytedance.sdk.open.tiktok.TikTokOpenApiFactory;
-import com.bytedance.sdk.open.tiktok.TikTokOpenConfig;
-import com.bytedance.sdk.open.tiktok.api.TikTokOpenApi;
-import com.bytedance.sdk.open.tiktok.authorize.model.Authorization;
-import com.somo.flutter_tiktok_auth.tiktokapi.TikTokEntryActivity;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -21,36 +13,40 @@ import io.flutter.plugin.common.MethodChannel.Result;
 
 /** FlutterTiktokAuthPlugin */
 public class FlutterTiktokAuthPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
+
+  private static final String channelName = "flutter_tiktok_auth";
   private MethodChannel channel;
   private ActivityPluginBinding activityPluginBinding;
-  private Result result;
+  private TikTokAuth ttAuth;
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_tiktok_auth");
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), channelName);
     channel.setMethodCallHandler(this);
   }
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    this.result = result;
-    TikTokEntryActivity.result = result;
 
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else if (call.method.equals("init")) {
-      init(call.argument("clientKey"));
-    } else if (call.method.equals("authorize")) {
-      Log.d("SOMO authCode AUTHORIZE", "authorize");
-      authorize(call.argument("scope"), call.argument("state"));
-    } else {
-      result.notImplemented();
+    switch (call.method) {
+      case "init":
+        init(result, call.argument("clientKey"));
+        break;
+      case "authorize":
+        authorize(result, call.argument("scope"), call.argument("state"));
+        break;
+      default:
+        result.notImplemented();
     }
   }
 
-  @Override
-  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
+  private void init(MethodChannel.Result result, @NonNull String clientKey) {
+    ttAuth = new TikTokAuth(this.activityPluginBinding.getActivity(), clientKey);
+    result.success(0);
+  }
+
+  private void authorize(MethodChannel.Result result, String scope, String state) {
+    ttAuth.authorize(result, scope, state);
   }
 
   private void attachToActivity(ActivityPluginBinding activityPluginBinding) {
@@ -59,6 +55,11 @@ public class FlutterTiktokAuthPlugin implements FlutterPlugin, MethodCallHandler
 
   private void disposeActivity() {
     activityPluginBinding = null;
+  }
+
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+    channel.setMethodCallHandler(null);
   }
 
   @Override
@@ -79,26 +80,5 @@ public class FlutterTiktokAuthPlugin implements FlutterPlugin, MethodCallHandler
   @Override
   public void onDetachedFromActivity() {
     disposeActivity();
-  }
-
-  private  void init(@NonNull String clientKey) {
-    TikTokOpenConfig tiktokOpenConfig = new TikTokOpenConfig(clientKey);
-    TikTokOpenApiFactory.init(tiktokOpenConfig);
-    Log.d("SOMO init", "" + clientKey);
-    result.success(0);
-  }
-
-  private void authorize(String scope, String state) {
-    // 1. Create TiktokOpenApi
-    TikTokOpenApi tiktokOpenApi= TikTokOpenApiFactory.create(this.activityPluginBinding.getActivity());
-
-    // 2. Create Authorization.Request instance
-    Authorization.Request request = new Authorization.Request();
-    request.scope = scope;
-    request.state = state;
-    request.callerLocalEntry = "com.somo.flutter_tiktok_auth.tiktokapi.TikTokEntryActivity";
-
-    // 3. Start Authorization
-    tiktokOpenApi.authorize(request);
   }
 }

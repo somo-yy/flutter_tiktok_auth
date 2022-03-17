@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_tiktok_auth/flutter_tiktok_auth.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('flutter_tiktok_auth');
@@ -15,9 +14,5 @@ void main() {
 
   tearDown(() {
     channel.setMockMethodCallHandler(null);
-  });
-
-  test('getPlatformVersion', () async {
-    expect(await FlutterTiktokAuth.platformVersion, '42');
   });
 }

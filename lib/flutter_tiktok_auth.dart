@@ -1,14 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_tiktok_auth/models/authorize_result.dart';
+export "models/authorize_result.dart";
 
 class FlutterTiktokAuth {
   static const MethodChannel _channel = MethodChannel('flutter_tiktok_auth');
-
-  static Future<String?> get platformVersion async {
-    final String? version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
 
   final String clientKey;
   bool _hasInit = false;
@@ -21,9 +18,24 @@ class FlutterTiktokAuth {
     _hasInit = true;
   }
 
-  Future<String?> authorize({required String scope, String state = ""}) async {
+  Future<AuthorizeResult> authorize(
+      {required String scope, String state = ""}) async {
     await _init();
-    return await _channel
-        .invokeMethod('authorize', {"scope": scope, "state": state});
+    try {
+      final result = await _channel
+          .invokeMethod('authorize', {"scope": scope, "state": state});
+      return AuthorizeSucceeded(authCode: result["authCode"]);
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case "CANCELED":
+          return AuthorizeCanceled();
+        case "OPERATION_IN_PROGRESS":
+          return AuthorizePending();
+        case "FAILED":
+          return AuthorizeFailed(code: e.code, message: e.message);
+        default:
+          throw Exception("Unknown Error");
+      }
+    }
   }
 }

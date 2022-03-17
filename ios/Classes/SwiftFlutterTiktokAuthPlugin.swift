@@ -3,46 +3,72 @@ import UIKit
 import TikTokOpenSDK
 
 public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
-  public static func register(with registrar: FlutterPluginRegistrar) {
-      
-    TikTokOpenSDKApplicationDelegate.initialize()
-      
-    let channel = FlutterMethodChannel(name: "flutter_tiktok_auth", binaryMessenger: registrar.messenger())
-    let instance = SwiftFlutterTiktokAuthPlugin()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-      
-    registrar.addApplicationDelegate(instance)
-  }
-    
-  private var mainWindow: UIWindow? {
-    if let applicationWindow = UIApplication.shared.delegate?.window ?? nil {
-        return applicationWindow
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        TikTokOpenSDKApplicationDelegate.initialize()
+        let channel = FlutterMethodChannel(name: "flutter_tiktok_auth", binaryMessenger: registrar.messenger())
+        let instance = SwiftFlutterTiktokAuthPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
+        registrar.addApplicationDelegate(instance)
     }
-    
-    if #available(iOS 13.0, *) {
-        if let scene = UIApplication.shared.connectedScenes.first(where: { $0.session.role == .windowApplication }),
-           let sceneDelegate = scene.delegate as? UIWindowSceneDelegate,
-           let window = sceneDelegate.window as? UIWindow  {
-            return window
-        }
-    }
-    
-    return nil
-  }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    private var mainWindow: UIWindow? {
+        if let applicationWindow = UIApplication.shared.delegate?.window ?? nil {
+            return applicationWindow
+        }
+
+        if #available(iOS 13.0, *) {
+            if let scene = UIApplication.shared.connectedScenes.first(where: { $0.session.role == .windowApplication }),
+               let sceneDelegate = scene.delegate as? UIWindowSceneDelegate,
+               let window = sceneDelegate.window as? UIWindow  {
+                return window
+            }
+        }
+
+        return nil
+    }
+
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+      let args = call.arguments as? [String: Any]
+      
       switch call.method {
       case "init":
           self.initSDK(result: result)
           break
       case "authorize":
-          self.authorize(result: result)
+          self.authorize(result: result, scope: args?["scope"] as! String, state: args?["state"] as! String)
           break
       default:
           result(FlutterMethodNotImplemented)
           return
       }
-  }
+    }
+    
+    private func initSDK(result: @escaping FlutterResult) {
+        result(0)
+    }
+
+    private func authorize(result: @escaping FlutterResult, scope: String, state: String) {
+        let request = TikTokOpenSDKAuthRequest()
+        request.permissions = NSOrderedSet(array:scope.components(separatedBy: ","))
+        request.state = state
+        
+        let viewController: UIViewController = (mainWindow?.rootViewController)!
+        
+        request.send(viewController, completion: { resp -> Void in
+            
+            if (resp.errCode == TikTokOpenSDKErrorCode.success) {
+                result(["authCode": resp.code]);
+            } else if ( resp.errCode == TikTokOpenSDKErrorCode.errorCodeUserCanceled ) {
+                result(FlutterError(code: "CANCELED",
+                                    message: "Canceled",
+                                    details: nil))
+            } else {
+                result(FlutterError(code: "FAILED",
+                                    message: "\(resp.errCode):\(resp.errString ?? "")",
+                                    details: nil))
+            }
+        })
+    }
     
     public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [AnyHashable: Any]) -> Bool {
         var options = [UIApplication.LaunchOptionsKey: Any]()
@@ -79,31 +105,5 @@ public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
             return true
         }
         return false
-    }
-    
-    private func initSDK(result: @escaping FlutterResult) {
-        result(0)
-    }
-    
-    private func authorize(result: @escaping FlutterResult) {
-        /* STEP 1 */
-        let scopes = ["user.info.basic,video.list"]
-        let scopesSet = NSOrderedSet(array:scopes)
-        let request = TikTokOpenSDKAuthRequest()
-        request.permissions = scopesSet
-        
-        // let viewController: UIViewController = (UIApplication.shared.delegate?.window??.rootViewController)!;
-        let viewController: UIViewController = (mainWindow?.rootViewController)!
-        
-        /* STEP 2 */
-        request.send(viewController, completion: { resp -> Void in
-            guard resp.errCode == TikTokOpenSDKErrorCode.success else {
-                result(FlutterError(code: "\(resp.errCode)",
-                                    message: resp.errString,
-                                    details: nil))
-                return
-            }
-            result(resp.code);
-        })
     }
 }
