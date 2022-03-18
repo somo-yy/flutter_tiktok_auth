@@ -84,32 +84,38 @@ public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
 
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
 
-        print(">>>>>>>>>>>>> 6.1 options")
-        print(options)
-        print("<<<<<<<<<<<<< 6.1 options")
+//        print(">>>>>>>>>>>>> 6.1 options")
+//        print(options)
+//        print("<<<<<<<<<<<<< 6.1 options")
+//
+//        print(">>>>>>>>>>>>> 6.2 sourceApplication")
+//        print(UIApplication.OpenURLOptionsKey.sourceApplication)
+//        print("<<<<<<<<<<<<< 6.2 sourceApplication")
+//
+//        print(">>>>>>>>>>>>> 6.3 annotation")
+//        print(UIApplication.OpenURLOptionsKey.annotation)
+//        print("<<<<<<<<<<<<< 6.3 annotation")
+//
+//        guard let sourceApplication = options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+//              let annotation = options[UIApplication.OpenURLOptionsKey.annotation] else {
+//            print(">>>>>>>>>>>>> 7" )
+//            return false
+//        }
+//
+//        print(">>>>>>>>>>>>> 8" )
         
-        print(">>>>>>>>>>>>> 6.2 sourceApplication")
-        print(UIApplication.OpenURLOptionsKey.sourceApplication)
-        print("<<<<<<<<<<<<< 6.2 sourceApplication")
-        
-        print(">>>>>>>>>>>>> 6.3 annotation")
-        print(UIApplication.OpenURLOptionsKey.annotation)
-        print("<<<<<<<<<<<<< 6.3 annotation")
-        
-        guard let sourceApplication = options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-              let annotation = options[UIApplication.OpenURLOptionsKey.annotation] else {
-            print(">>>>>>>>>>>>> 7" )
-            return false
-        }
-        
-        print(">>>>>>>>>>>>> 8" )
+        let processed = TikTokOpenSDKApplicationDelegate.sharedInstance().application(
+                    app, open: url,
+                    sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                    annotation: options[UIApplication.OpenURLOptionsKey.annotation] as Any)
+                return processed;
 
-        if TikTokOpenSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: sourceApplication, annotation: annotation) {
-            print(">>>>>>>>>>>>> 9" )
-            return true
-        }
-        print(">>>>>>>>>>>>> 10" )
-        return false
+//        if TikTokOpenSDKApplicationDelegate.sharedInstance().application(app, open: url, sourceApplication: sourceApplication, annotation: annotation) {
+//            print(">>>>>>>>>>>>> 9" )
+//            return true
+//        }
+//        print(">>>>>>>>>>>>> 10" )
+//        return false
     }
 
     public func application(_ application: UIApplication, open url: URL, sourceApplication: String, annotation: Any) -> Bool {
