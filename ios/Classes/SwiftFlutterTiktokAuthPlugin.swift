@@ -81,10 +81,21 @@ public class SwiftFlutterTiktokAuthPlugin: NSObject, FlutterPlugin {
         TikTokOpenSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: options)
         return true
     }
-    
+
     public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
 
-        print(">>>>>>>>>>>>> 6" )
+        print(">>>>>>>>>>>>> 6.1 options")
+        print(options)
+        print("<<<<<<<<<<<<< 6.1 options")
+        
+        print(">>>>>>>>>>>>> 6.2 sourceApplication")
+        print(UIApplication.OpenURLOptionsKey.sourceApplication)
+        print("<<<<<<<<<<<<< 6.2 sourceApplication")
+        
+        print(">>>>>>>>>>>>> 6.3 annotation")
+        print(UIApplication.OpenURLOptionsKey.annotation)
+        print("<<<<<<<<<<<<< 6.3 annotation")
+        
         guard let sourceApplication = options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
               let annotation = options[UIApplication.OpenURLOptionsKey.annotation] else {
             print(">>>>>>>>>>>>> 7" )
